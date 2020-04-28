@@ -1,0 +1,56 @@
+[user]
+	email = james.stuart@uq.net.au
+[user]
+	name = James Stuart
+
+# More at: http://cheat.errtheblog.com/s/git
+[color]
+  ui = true
+[color "branch"]
+  current = yellow reverse
+  local = yellow
+  remote = green
+[color "diff"]
+  meta = yellow bold
+  frag = magenta bold
+  old = red bold
+  new = green bold
+  whitespace = red reverse
+[color "status"]
+  added = yellow
+  changed = green
+  untracked = cyan
+[alias]
+  st = status
+  ci = commit
+  br = branch
+  co = checkout
+  df = diff
+  dc = diff --cached
+  lg = log -p
+  loa = log --pretty=format:"%h%x09%an%x09%ad%x09%s"
+  lol = log --graph --decorate --pretty=oneline --abbrev-commit
+  lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
+  ls = ls-files
+  unreferenced-blobs = gc --prune=now
+
+  # list committers by number of commits
+  rank = shortlog -esn --no-merges
+
+  # show branches
+  shbr =  for-each-ref --sort=-committerdate refs/heads/
+
+  # Show files ignored by git:
+  ign = ls-files -o -i --exclude-standard
+[push]
+  default = tracking
+[merge]
+	tool = meld
+	conflictstyle = diff3
+[diff]
+	guitool = meld
+
+[credential]
+	helper = cache
+[core]
+	autocrlf = input
