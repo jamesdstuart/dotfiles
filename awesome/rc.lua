@@ -353,8 +353,8 @@ globalkeys = gears.table.join(
     awful.key({ modkey }, "p", function() menubar.show() end,
               {description = "show the menubar", group = "launcher"}),
     -- Brightness
-    awful.key({ }, "XF86MonBrightnessUp", function () awful.util.spawn("xbacklight -inc 5") end),
-    awful.key({ }, "XF86MonBrightnessDown", function () awful.util.spawn("xbacklight -dec 5") end)
+    awful.key({ }, "XF86MonBrightnessUp", function () awful.spawn("brightnessctl -q set +5%") end),
+    awful.key({ }, "XF86MonBrightnessDown", function () awful.spawn("brightnessctl -q set 5%-") end)
 )
 
 clientkeys = gears.table.join(
