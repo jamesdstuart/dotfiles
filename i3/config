@@ -187,5 +187,15 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-        status_command i3status
+#        status_command i3status
+#    status_command exec python3 .local/lib/python3.8/site-packages/powerline/bindings/i3/powerline-i3.py
+#
+#     status_command exec python3 .local/lib/python3.8/site-packages/powerline/bindings/bar/powerline-bar.py --i3 | lemonbar
+#    font pango:PowerlineFont 12
+#    status_command powerline-lemonbar --height 16 -- -b -f 'DejaVu Sans Mono-11' -f 'PowerlineSymbols-12' -f 'FontAwesome-11'
+	status_command bumblebee-status -m vpn nic disk:root cpu \
+		memory battery brightness date time pasink pasource \
+		-p root.path=/ time.format="%H:%M:%S" date.format="%a, %b %d %Y CW %V" \
+          \
+		-t solarized-powerline
 }
