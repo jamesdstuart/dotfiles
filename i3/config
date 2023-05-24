@@ -34,6 +34,9 @@ exec --no-startup-id nm-applet
 for_window [class="Gnome-calculator"] floating enable, border normal
 bindsym XF86Calculator exec gnome-calculator
 
+# Bluetooth manager floating
+for_window [class="Blueman-manager"] floating enable, border normal
+
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
 bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5% && $refresh_i3status
@@ -49,7 +52,9 @@ bindsym XF86MonBrightnessDown exec brightnessctl -q set 5%-
 floating_modifier $mod
 
 # start a terminal
-bindsym $mod+Return exec i3-sensible-terminal
+# bindsym $mod+Shift+Return exec alacritty
+bindsym $mod+Return exec gnome-terminal
+bindsym $mod+Ctrl+Return exec i3-sensible-terminal
 
 # kill focused window
 bindsym $mod+Shift+q kill
@@ -61,11 +66,13 @@ bindsym Shift+XF86PowerOff exec cinnamon-screensaver-command -l
 bindsym XF86PowerOff exec systemctl suspend
 
 # start dmenu (a program launcher)
-bindsym $mod+d exec dmenu_run
+bindsym $mod+Shift+d exec dmenu_run
+#
 # There also is the (new) i3-dmenu-desktop which only displays applications
 # shipping a .desktop file. It is a wrapper around dmenu, so you need that
 # installed.
 # bindsym $mod+d exec --no-startup-id i3-dmenu-desktop
+bindsym $mod+d exec j4-dmenu-desktop
 
 # change focus
 bindsym $mod+j focus left
@@ -196,13 +203,14 @@ bindsym $mod+r mode "resize"
 # finds out, if available)
 bar {
     position top
+    tray_output primary
 #        status_command i3status
 #    status_command exec python3 .local/lib/python3.8/site-packages/powerline/bindings/i3/powerline-i3.py
 #
 #     status_command exec python3 .local/lib/python3.8/site-packages/powerline/bindings/bar/powerline-bar.py --i3 | lemonbar
 #    font pango:PowerlineFont 12
 #    status_command powerline-lemonbar --height 16 -- -b -f 'DejaVu Sans Mono-11' -f 'PowerlineSymbols-12' -f 'FontAwesome-11'
-	status_command bumblebee-status -m vpn nic disk:root cpu \
+	status_command bumblebee-status -m vpn nic bluetooth disk:root cpu \
 		memory battery brightness date time pasink pasource \
 		-p root.path=/ time.format="%H:%M:%S" date.format="%a, %b %d %Y CW %V" \
           \
