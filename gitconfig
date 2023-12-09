@@ -1,7 +1,8 @@
 [user]
-	email = james.stuart@uq.net.au
-[user]
 	name = James Stuart
+	email = dev@rodstuart.id.au
+[init]
+	defaultBranch = "main"
 
 # More at: http://cheat.errtheblog.com/s/git
 [color]
@@ -21,16 +22,25 @@
   changed = green
   untracked = cyan
 [alias]
+  cl = clone --recurse-submodules
   st = status
+  sts = status --short -uno
   ci = commit
   br = branch
   co = checkout
+  coall = submodule foreach --recursive git checkout
+  pullall = submodule foreach --recursive git pull
   df = diff
+  dfp = diff HEAD~1
   dc = diff --cached
+  dfs = diff --staged
   lg = log -p
   loa = log --pretty=format:"%h%x09%an%x09%ad%x09%s"
   lol = log --graph --decorate --pretty=oneline --abbrev-commit
   lola = log --graph --decorate --pretty=oneline --abbrev-commit --all
+  logpnm = log -p --first-parent --diff-merges=off
+  logsnm = log --stat --first-parent --diff-merges=off
+  lognm = log --first-parent --diff-merges=off
   ls = ls-files
   unreferenced-blobs = gc --prune=now
 
@@ -44,13 +54,36 @@
   ign = ls-files -o -i --exclude-standard
 [push]
   default = tracking
+	autoSetupRemote = true
 [merge]
 	tool = meld
 	conflictstyle = diff3
 [diff]
 	guitool = meld
+	colorMoved = zebra
 
 [credential]
 	helper = cache
+
+[status]
+	submodulesummary = 1
+[pull]
+	rebase = true
+[fetch]
+	prune = true
+
+[filter "nbstripout"]
+	clean = \"/usr/bin/python3\" -m nbstripout
+	smudge = cat
+[diff "ipynb"]
+	textconv = \"/usr/bin/python3\" -m nbstripout -t
 [core]
-	autocrlf = input
+    pager = diffr | less -R
+[interactive]
+    diffFilter = diffr
+[filter "lfs"]
+	required = true
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+
