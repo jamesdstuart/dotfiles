@@ -3,14 +3,22 @@
 pcall(require, "luarocks.loader")
 
 -- Standard awesome library
+-- gears: Utilities such as color parsing and objects
 local gears = require("gears")
+-- awful: Everything related to window managment
 local awful = require("awful")
 require("awful.autofocus")
+
 -- Widget and layout library
+-- wibox: Awesome own generic widget framework
 local wibox = require("wibox")
+
 -- Theme handling library
+-- beautiful: Awesome theme module
 local beautiful = require("beautiful")
+
 -- Notification library
+-- naughty: Notifications
 local naughty = require("naughty")
 local menubar = require("menubar")
 local hotkeys_popup = require("awful.hotkeys_popup")
@@ -26,7 +34,13 @@ local has_fdo, freedesktop = pcall(require, "freedesktop")
 local brightness = require("brightness")
 brightness_ctrl = brightness({})
 
+-- Import components
+require("components.exit-screen")
+require("components.volume-adjust")
+require("components.backlight-adjust")
 
+
+-- ERROR HANDLING
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
 -- another config (This code will only ever execute for the fallback config)
@@ -52,15 +66,39 @@ do
 end
 -- }}}
 
+-- VARIABLE DEFINITIONS
 -- {{{ Variable definitions
 -- Themes define colours, icons, font and wallpapers.
-beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
+local config_dir = gears.filesystem.get_configuration_dir() .. "/config/"
+local theme_path = gears.filesystem.get_configuration_dir() .. "/themes/theme.lua"
+-- beautiful.init(gears.filesystem.get_themes_dir() .. "default/theme.lua")
+beautiful.init(theme_path)
 
 -- This is used later as the default terminal and editor to run.
 -- terminal = "x-terminal-emulator"
 terminal = "alacritty"
 editor = os.getenv("EDITOR") or "editor"
 editor_cmd = terminal .. " -e " .. editor
+
+-- define default apps (global variable so other components can access it)
+apps = {
+--  network_manager = "connman-gtk --no-icon",
+--  power_manager = "", -- recommended: xfce4-power-manager
+  bluetooth_manager = "blueman-applet",
+  terminal = "gnome-terminal",
+--  launcher = "play.py",
+--  lock = "light-locker-command -l",
+  lock = "cinnamon-screensaver-command --lock",
+  screenshot = "gnome-screenshot --interactive"
+}
+
+-- define wireless and ethernet interface names for the network widget
+-- use `ip link` command to determine these
+network_interfaces = {
+  wlan = 'wlp0s20f3',
+  lan  = 'enp0s31f6',
+  lan2 = 'enx000ec6796c95'
+}
 
 -- Default modkey.
 -- Usually, Mod4 is the key with a logo between Control and Alt.
@@ -88,6 +126,7 @@ awful.layout.layouts = {
     -- awful.layout.suit.corner.sw,
     -- awful.layout.suit.corner.se,
 }
+
 -- }}}
 
 -- {{{ Menu
@@ -451,9 +490,30 @@ for i = 1, 9 do
     )
 end
 
+-- check if mouse clicks on window border
+local function check_border(mx, my, cx, cy, cw, ch)
+  local onborder = nil
+  if my > (cy + ch - 6) then
+    if mx < (cx + 30) then onborder = "bottom_left"
+    elseif mx > (cx + cw - 30) then onborder = "bottom_right"
+    else onborder = "bottom"
+    end
+  elseif mx < (cx + 4) then onborder = "left"
+  elseif mx > (cx + cw - 4) then onborder = "right"
+  end
+  return onborder
+end
+
+-- Mouse events on windows
 clientbuttons = gears.table.join(
     awful.button({ }, 1, function (c)
-        c:emit_signal("request::activate", "mouse_click", {raise = true})
+      c:emit_signal("request::activate", "mouse_click", {raise = true})
+      local cx, cy, cw, ch = c:geometry().x, c:geometry().y, c:geometry().width, c:geometry().height
+      local mx, my = _G.mouse.coords().x, _G.mouse.coords().y
+      local onborder = check_border(mx, my, cx, cy, cw, ch)
+      if onborder then
+        awful.mouse.client.resize(c, onborder)
+      end
     end),
     awful.button({ modkey }, 1, function (c)
         c:emit_signal("request::activate", "mouse_click", {raise = true})
@@ -468,6 +528,14 @@ clientbuttons = gears.table.join(
 -- Set keys
 root.keys(globalkeys)
 -- }}}
+
+local floating_client_placement = function(c)
+    local f = awful.placement.centered + awful.placement.no_offscreen
+    return f(c, {honor_padding = true, honor_workarea = true, size_hints_honor = true})
+end
+
+
+-- RULES --
 
 -- {{{ Rules
 -- Rules to apply to new clients (through the "manage" signal).
